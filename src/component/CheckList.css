@@ -1,0 +1,92 @@
+.SelectDiv {
+    padding:20px;
+}
+
+.RegionSelect {
+ color : black;   
+ width : 250px;
+ white-space : nowrap;
+ display:inline-block;
+}
+
+.MainSelect {
+    color : black;   
+    width : 250px;
+    white-space : nowrap;
+    display:inline-block;
+   }
+
+.MiddleSelect {
+    color : black;   
+    width : 250px;
+    white-space : nowrap;
+    display:inline-block;
+} 
+
+.UserInput {
+    width : 250px;
+    height : 32px;
+    border-radius: 3px;
+}
+
+.SerachButton {
+    width : 250px;
+    height : 32px;
+    color: white;
+    background: #4C8FFB;
+    border: 1px #3079ED solid;
+    box-shadow: inset 0 1px 0 #80B0FB;
+}
+
+button.blue {
+    color: white;
+    background: #4C8FFB;
+    border: 1px #3079ED solid;
+    box-shadow: inset 0 1px 0 #80B0FB;
+}
+
+.SerachButton:hover {
+    border: 1px #2F5BB7 solid;
+    box-shadow: 0 1px 1px #EAEAEA, inset 0 1px 0 #5A94F1;
+    background: #3F83F1;
+}
+
+.SerachButton:active {
+    box-shadow: inset 0 2px 5px #2370FE;   
+}
+
+
+.product-card {
+    border-radius: 10px; /* 각 카드의 모서리를 둥글게 처리 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    border: 1px solid #eaeaea; /* 경계선 */
+    padding: 20px; /* 내용과 경계선 사이 간격 */
+    margin-bottom: 20px; /* 각 카드 사이 간격 */
+    list-style: none;
+  }
+  
+  /* 각 카드의 제목과 설명 텍스트 스타일 */
+  .product-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .product-description {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #666;
+  }
+
+.a {
+    text-decoration: none;
+    color: black; /* 링크 색상을 변경하려면 여기에 원하는 색상 값을 입력하세요 */
+  }
+
+  .a:hover {
+    text-decoration: underline; /* 마우스를 올렸을 때만 밑줄 보이기 */
+  }
+
+  .spantitle {
+    background-color: white;
+  }
