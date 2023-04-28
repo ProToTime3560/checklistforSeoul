@@ -136,7 +136,6 @@ function CheckList() {
 
   useEffect(() => {
     console.log("변경발견")
-    if(selectRegion == 1)
     axios
       .post("http://localhost:3001/api/getspecificdata", {
             Region: selectRegion,
@@ -264,6 +263,9 @@ function CheckList() {
   );
 }
 
+if(vieData.length === 0) {
+  
+}
 function Card(props) {
   const 평일오픈시간 = props.item["OPENWEEKHOUR"];
   let 오픈시 = 0;
@@ -291,7 +293,7 @@ function Card(props) {
           <img src={process.env.PUBLIC_URL} className="item-img"></img>
           <div className="product-description">
             <span className="spantitle">
-              카테고리 : {props.item["MAINGONGUCODE"]} &gt;{" "}
+              카테고리 : {props.item["MAINGONGUNAME"]} &gt;{" "}
               {props.item["SUBGONGUNAME"]}
             </span>
             <span>대여장소 :{props.item["PLACENAME"]}</span>
