@@ -12,6 +12,7 @@ function CheckList() {
   const [page, setPage] = useState(1); // 현재 페이지
   let [viewData, setViewData] = useState([]);
 
+  /* 비활성화된 부분 밑에 구현되어있음
   useEffect(() => {
     axios
       .get("http://localhost:3001/api/getdefaultdata")
@@ -25,6 +26,7 @@ function CheckList() {
         console.error(error);
       });
   }, []);
+  */
 
   const regionList = [
     { value: "모든지역", label: "모든지역" },
@@ -132,25 +134,36 @@ function CheckList() {
   let [selectMiddleCategory, setselectMiddleCategory] = useState(
     middleCategoryList0[0].value
   );
-  let [userInput, setUserInput] = useState("");
+  let [IsDataloding, setIsDataloding] = useState(false)
+  let [userInput, setuserInput] = useState("");
+  let [searchArray, setsearchArray] = useState([]);
+  let [checkbutton, setcheckbutton] = useState(false)//useEffect userinput바뀔때마다 무한루프 방지용
 
   useEffect(() => {
+    //if(checkbutton == true){ //버튼이 눌렸을때만
     console.log("변경발견")
+    setIsDataloding(true)
     axios
       .post("http://localhost:3001/api/getspecificdata", {
             Region: selectRegion,
             MainCategory: selectMainCategory,
-            MiddleCategory: selectMiddleCategory
+            MiddleCategory: selectMiddleCategory,
+            searchArray : searchArray
       })
       .then((response) => {
         const parsedData = response.data;
         setViewData(parsedData);
         console.log(parsedData);
+        setIsDataloding(false);
+        setcheckbutton(false);
       })
       .catch((error) => {
         console.error(error);
+        setIsDataloding(false);
+        setcheckbutton(false);
       });
-  }, [selectRegion,selectMainCategory, selectMiddleCategory]);
+    //}
+  }, [selectRegion,selectMainCategory, selectMiddleCategory, searchArray]);
 
   return (
     <div className="SelectDiv">
@@ -237,18 +250,38 @@ function CheckList() {
       )}
       <input
         className="UserInput"
-        placeholder="공구명 검색"
+        placeholder="공구명 검색 (,를 이용해 다중검색가능)"
         onChange={(e) => {
-          setUserInput(e.target.value);
+          setuserInput(e.target.value);
+        }}
+        onKeyDown={(event)=> {
+          if (event.key === "Enter") {
+            let filteredInput = userInput.trim().replace(/\s+/g, ' ');
+            let tempsearchArray = filteredInput.split(',').map((searchTerm) => searchTerm.trim());
+            setsearchArray(tempsearchArray);
+            console.log(searchArray);
+            setcheckbutton(true)
+          }
         }}
       />
-      <button className="SerachButton" onClick={() => {}}>
+      <button className="SerachButton" onClick={() => { //인젝션 공격방지 적용
+        let filteredInput = userInput.trim().replace(/\s+/g, ' ');
+        let tempsearchArray = filteredInput.split(',').map((searchTerm) => searchTerm.trim());
+        setsearchArray(tempsearchArray);
+        console.log(searchArray);
+        setcheckbutton(true)
+      }}>
         검색
       </button>
-      <p>
-        {selectRegion} {selectMainCategory} {selectMiddleCategory}
-        {userInput}
+      <p> 디버그용 확인창----------
+        선택지역 : {selectRegion + " , "} 대분류 코드 : {selectMainCategory + " , "} 중분류 코드: {selectMiddleCategory + " , "}
+        사용자 입력 : {userInput + " , "} 검색에 적용된 배열키 : {searchArray}
       </p>
+      {
+      IsDataloding == true ? <div><img src={process.env.PUBLIC_URL + '/loding-unbackground.gif'} alt="로딩창" /><p>서버로부터 데이터를 로딩중입니다.</p></div> : viewData.length == 0 ? <p>해당하는 항목이 없습니다.</p> :  <p></p>
+        
+      }
+      
 
       <div className="container">
         <div className="row">
@@ -263,9 +296,7 @@ function CheckList() {
   );
 }
 
-if(vieData.length === 0) {
-  
-}
+
 function Card(props) {
   const 평일오픈시간 = props.item["OPENWEEKHOUR"];
   let 오픈시 = 0;
@@ -307,7 +338,7 @@ function Card(props) {
                 ? ` ${클로즈시}시 ${클로즈분}분`
                 : " "}
             </span>
-            <p class="title-sub">
+            <p className="title-sub">
               <span>전화번호 : {props.item["TELEPHONE"]}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <span>대여료 : {props.item["COST"]}</span>
@@ -315,15 +346,15 @@ function Card(props) {
           </div>
         </a>
 
-        <div class="cotg">
-          <div class="cnt">
-            <span class="ttl">전체수량 : {props.item["GONGUCOUNT"]}</span>
+        <div className="cotg">
+          <div className="cnt">
+            <span className="ttl">전체수량 : {props.item["GONGUCOUNT"]}</span>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <span class="abl" id="abl_14478">
+            <span className="abl" id="abl_14478">
               예약 가능 수량 : {props.item["GONGUCOUNT"]}
             </span>
           </div>
-          <a href="#ppc1" class="od opp-sw-open" id="14478">
+          <a href="#ppc1" className="od opp-sw-open" id="14478">
             예약
           </a>
         </div>
