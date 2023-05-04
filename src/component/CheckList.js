@@ -1,32 +1,21 @@
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
-import "../component/CheckList.css";
+import styles from "../component/CheckList.module.css"
+import { useDispatch, useSelector} from "react-redux"
+import { UPDATE_VIEWDATA, ADD_userCart, DELETE_userCart, GET_userCart } from "../component/reduxStoreForViewData.js"
 
 //출력할개수  지역
 //선택상자   선택상자
 
-function CheckList() {
-  const PAGE_SIZE = 20;
 
-  const [page, setPage] = useState(1); // 현재 페이지
+function CheckList() {
+
   let [viewData, setViewData] = useState([]);
 
-  /* 비활성화된 부분 밑에 구현되어있음
-  useEffect(() => {
-    axios
-      .get("http://localhost:3001/api/getdefaultdata")
-      .then((response) => {
-        const parsedData = response.data;
-        setViewData(parsedData);
-        //console.log(viewData)
-        console.log(parsedData);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-  */
+  let Store = useSelector((state)=>{ return state } )
+  let dispatch = useDispatch()
+  console.log(Store)
 
   const regionList = [
     { value: "모든지역", label: "모든지역" },
@@ -153,7 +142,8 @@ function CheckList() {
       .then((response) => {
         const parsedData = response.data;
         setViewData(parsedData);
-        console.log(parsedData);
+        dispatch(UPDATE_VIEWDATA(parsedData))
+
         setIsDataloding(false);
         setcheckbutton(false);
       })
@@ -165,134 +155,158 @@ function CheckList() {
     //}
   }, [selectRegion,selectMainCategory, selectMiddleCategory, searchArray]);
 
-  return (
-    <div className="SelectDiv">
-      <Select
-        className="RegionSelect"
-        options={regionList}
-        placeholder="지역선택"
-        onChange={(e) => {
-          if (e) {
-            setselectRegion(e.value);
-          }
-        }}
-      />
-      <Select
-        className="MainSelect"
-        options={mainCategoryList}
-        placeholder="대분류선택"
-        onChange={(e) => {
-          if (e) {
-            setselectMainCategory(e.value);
-            setselectMiddleCategory(0)
-          }
-        }}
-      />
-    {selectMainCategory === "0" && (
-        <Select
-          className="MiddleSelect"
-          options={middleCategoryList0}
-          placeholder="중분류선택"
-          onChange={(e) => {
-            if (e) {
-              setselectMiddleCategory(e.value);
-            }
-          }}
-        />
-      )}
-      {selectMainCategory === "1" && (
-        <Select
-          className="MiddleSelect"
-          options={middleCategoryList1}
-          placeholder="중분류선택"
-          onChange={(e) => {
-            if (e) {
-              setselectMiddleCategory(e.value);
-            }
-          }}
-        />
-      )}
-      {selectMainCategory === "2" && (
-        <Select
-          className="MiddleSelect"
-          options={middleCategoryList2}
-          placeholder="중분류선택"
-          onChange={(e) => {
-            if (e) {
-              setselectMiddleCategory(e.value);
-            }
-          }}
-        />
-      )}
-      {selectMainCategory === "3" && (
-        <Select
-          className="MiddleSelect"
-          options={middleCategoryList3}
-          placeholder="중분류선택"
-          onChange={(e) => {
-            if (e) {
-              setselectMiddleCategory(e.value);
-            }
-          }}
-        />
-      )}
-      {selectMainCategory === "4" && (
-        <Select
-          className="MiddleSelect"
-          options={middleCategoryList4}
-          placeholder="중분류선택"
-          onChange={(e) => {
-            if (e) {
-              setselectMiddleCategory(e.value);
-            }
-          }}
-        />
-      )}
-      <input
-        className="UserInput"
-        placeholder="공구명 검색 (,를 이용해 다중검색가능)"
-        onChange={(e) => {
-          setuserInput(e.target.value);
-        }}
-        onKeyDown={(event)=> {
-          if (event.key === "Enter") {
-            let filteredInput = userInput.trim().replace(/\s+/g, ' ');
-            let tempsearchArray = filteredInput.split(',').map((searchTerm) => searchTerm.trim());
-            setsearchArray(tempsearchArray);
-            console.log(searchArray);
-            setcheckbutton(true)
-          }
-        }}
-      />
-      <button className="SerachButton" onClick={() => { //인젝션 공격방지 적용
-        let filteredInput = userInput.trim().replace(/\s+/g, ' ');
-        let tempsearchArray = filteredInput.split(',').map((searchTerm) => searchTerm.trim());
-        setsearchArray(tempsearchArray);
-        console.log(searchArray);
-        setcheckbutton(true)
-      }}>
-        검색
-      </button>
-      <p> 디버그용 확인창----------
-        선택지역 : {selectRegion + " , "} 대분류 코드 : {selectMainCategory + " , "} 중분류 코드: {selectMiddleCategory + " , "}
-        사용자 입력 : {userInput + " , "} 검색에 적용된 배열키 : {searchArray}
-      </p>
-      {
-      IsDataloding == true ? <div><img src={process.env.PUBLIC_URL + '/loding-unbackground.gif'} alt="로딩창" /><p>서버로부터 데이터를 로딩중입니다.</p></div> : viewData.length == 0 ? <p>해당하는 항목이 없습니다.</p> :  <p></p>
-        
-      }
-      
+  let [currentPage, setCurrentPage] = useState(1);
+  let [productsPerPage] = useState(20);
 
-      <div className="container">
-        <div className="row">
-          {viewData.map(function (a, i) {
-            if (i < 198) {
-              return <Card key={i} item={viewData[i]} i={i}></Card>;
+  let indexOfLastProduct = currentPage * productsPerPage;
+  let indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  let currentProducts = viewData.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  let renderProducts = currentProducts.map(function (product, i) {
+    return <Card key={i} item={product} />;
+  });
+
+  let pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(viewData.length / productsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  let renderPageNumbers = pageNumbers.map(function (number) {
+    return (
+      <li key={number}>
+        <button onClick={() => setCurrentPage(number)}>{number}</button>
+      </li>
+    );
+  });
+
+  return (
+
+    <div className="CheckListView">
+      <div className={styles.SelectDiv}>
+        <Select
+          className={styles.RegionSelect}
+          options={regionList}
+          placeholder="지역선택"
+          onChange={(e) => {
+            if (e) {
+              setselectRegion(e.value);
             }
-          })}
+          }}
+        />
+        <Select
+          className={styles.MainSelect}
+          options={mainCategoryList}
+          placeholder="대분류선택"
+          onChange={(e) => {
+            if (e) {
+              setselectMainCategory(e.value);
+              setselectMiddleCategory(0)
+            }
+          }}
+        />
+      {selectMainCategory === "0" && (
+          <Select
+            className={styles.MiddleSelect}
+            options={middleCategoryList0}
+            placeholder="중분류선택"
+            onChange={(e) => {
+              if (e) {
+                setselectMiddleCategory(e.value);
+              }
+            }}
+          />
+        )}
+        {selectMainCategory === "1" && (
+          <Select
+            className={styles.MiddleSelect}
+            options={middleCategoryList1}
+            placeholder="중분류선택"
+            onChange={(e) => {
+              if (e) {
+                setselectMiddleCategory(e.value);
+              }
+            }}
+          />
+        )}
+        {selectMainCategory === "2" && (
+          <Select
+            className={styles.MiddleSelect}
+            options={middleCategoryList2}
+            placeholder="중분류선택"
+            onChange={(e) => {
+              if (e) {
+                setselectMiddleCategory(e.value);
+              }
+            }}
+          />
+        )}
+        {selectMainCategory === "3" && (
+          <Select
+            className={styles.MiddleSelect}
+            options={middleCategoryList3}
+            placeholder="중분류선택"
+            onChange={(e) => {
+              if (e) {
+                setselectMiddleCategory(e.value);
+              }
+            }}
+          />
+        )}
+        {selectMainCategory === "4" && (
+          <Select
+            className={styles.MiddleSelect}
+            options={middleCategoryList4}
+            placeholder="중분류선택"
+            onChange={(e) => {
+              if (e) {
+                setselectMiddleCategory(e.value);
+              }
+            }}
+          />
+        )}
+        <input
+          className={styles.UserInput}
+          placeholder="공구명 검색 (,를 이용해 다중검색가능)"
+          onChange={(e) => {
+            setuserInput(e.target.value);
+          }}
+          onKeyDown={(event)=> {
+            if (event.key === "Enter") {
+              let filteredInput = userInput.trim().replace(/\s+/g, ' ');
+              let tempsearchArray = filteredInput.split(',').map((searchTerm) => searchTerm.trim());
+              setsearchArray(tempsearchArray);
+              console.log(searchArray);
+              setcheckbutton(true)
+            }
+          }}
+        />
+        <button className={styles.SerachButton} onClick={() => { //인젝션 공격방지 적용
+          let filteredInput = userInput.trim().replace(/\s+/g, ' ');
+          let tempsearchArray = filteredInput.split(',').map((searchTerm) => searchTerm.trim());
+          setsearchArray(tempsearchArray);
+          console.log(searchArray);
+          setcheckbutton(true)
+        }}>
+          검색
+        </button>
+        <p> 디버그용 확인창----------
+          선택지역 : {selectRegion + " , "} 대분류 코드 : {selectMainCategory + " , "} 중분류 코드: {selectMiddleCategory + " , "}
+          사용자 입력 : {userInput + " , "} 검색에 적용된 배열키 : {searchArray}
+        </p>
+        {
+        IsDataloding == true ? <div><img src={process.env.PUBLIC_URL + '/loding-unbackground.gif'} alt="로딩창" /><p>서버로부터 데이터를 로딩중입니다.</p></div> : viewData.length == 0 ? <p>해당하는 항목이 없습니다.</p> :  <p></p>
+
+        }
+      {
+        IsDataloding == true ? null :
+        <div className={styles.container}>
+          <div className={styles.row}>{renderProducts}</div>
+          <ul id="page-numbers">{renderPageNumbers}</ul>
         </div>
-      </div>
-    </div>
+      }
+
+      </div> 
+    </div>//ListView
   );
 }
 
@@ -301,6 +315,7 @@ function Card(props) {
   const 평일오픈시간 = props.item["OPENWEEKHOUR"];
   let 오픈시 = 0;
   let 오픈분 = 0;
+  let dispatch = useDispatch()
   if (props.item["OPENWEEKHOUR"]) {
     const 평일오픈시간 = props.item["OPENWEEKHOUR"];
     오픈시 = String(Math.floor(평일오픈시간 / 100)).padStart(2, "0");
@@ -315,18 +330,17 @@ function Card(props) {
     클로즈분 = String(평일클로즈시간 % 100).padStart(2, "0");
   }
   return (
-    <div className="product-card">
+    <div className={styles.product_card}>
       <li>
-        <a href="" className="a">
-          <strong className="product-title">
+          <strong className={styles.product_title}>
             공구 이름 : {props.item["GONGUNAME"]}
           </strong>
-          <img src={process.env.PUBLIC_URL} className="item-img"></img>
-          <div className="product-description">
-            <span className="spantitle">
+          <img src={process.env.PUBLIC_URL} ></img>
+          <div className={styles.product_description}>
+            <span className={styles.spantitle}>
               카테고리 : {props.item["MAINGONGUNAME"]} &gt;{" "}
               {props.item["SUBGONGUNAME"]}
-            </span>
+            </span>{" "}
             <span>대여장소 :{props.item["PLACENAME"]}</span>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span>
@@ -338,30 +352,36 @@ function Card(props) {
                 ? ` ${클로즈시}시 ${클로즈분}분`
                 : " "}
             </span>
-            <p className="title-sub">
+            <p className={styles.title_sub}>
               <span>전화번호 : {props.item["TELEPHONE"]}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <span>대여료 : {props.item["COST"]}</span>
             </p>
           </div>
-        </a>
 
-        <div className="cotg">
-          <div className="cnt">
-            <span className="ttl">전체수량 : {props.item["GONGUCOUNT"]}</span>
+        <div className={styles.cotg}>
+          <div className={styles.cnt}>
+            <span className={styles.ttl}>전체수량 : {props.item["GONGUCOUNT"]}</span>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <span className="abl" id="abl_14478">
+            <span className={styles.abl} id="abl_14478">
               예약 가능 수량 : {props.item["GONGUCOUNT"]}
             </span>
           </div>
-          <a href="#ppc1" className="od opp-sw-open" id="14478">
-            예약
-          </a>
+          <button onClick={()=> {
+            dispatch(ADD_userCart(props.item))
+
+          }}>
+            장바구니추가
+          </button>
+          <button onClick={()=> {
+            dispatch(DELETE_userCart(props.item))
+          }}>
+            장바구니삭제
+          </button>
         </div>
       </li>
     </div>
   );
 }
-
 
 export default CheckList;

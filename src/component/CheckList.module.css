@@ -56,7 +56,7 @@ button.blue {
 }
 
 
-.product-card {
+.product_card {
     border-radius: 10px; /* 각 카드의 모서리를 둥글게 처리 */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
     border: 1px solid #eaeaea; /* 경계선 */
@@ -66,13 +66,13 @@ button.blue {
   }
   
   /* 각 카드의 제목과 설명 텍스트 스타일 */
-  .product-title {
+  .product_title {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
   }
   
-  .product-description {
+  .product_description {
     font-size: 18px;
     line-height: 1.5;
     color: #666;
@@ -89,4 +89,12 @@ button.blue {
 
   .spantitle {
     background-color: white;
+  }
+
+  .title_sub{
+    background-color: white;
+  }
+
+  .CheckListView {
+    
   }
