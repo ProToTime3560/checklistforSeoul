@@ -10,8 +10,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // URL 인코딩된 요청 �
 // MySQL 연결
 const db = mysql.createPool({
   host: "toolrentaloffice.coqcexjiecvx.us-east-1.rds.amazonaws.com", // 호스트
-  user: "*********",      // 데이터베이스 계정
-  password: "**********",      // 데이터베이스 비밀번호 가려놓음
+  user: "stakeholders",      // 데이터베이스 계정
+  password: "stakeholders",      // 데이터베이스 비밀번호 가려놓음
   database: "ToolRentalOffice",  // 사용할 데이터베이스
 });
 
@@ -715,16 +715,16 @@ app.post("/api/getspecificdata", (req, res) => {
                 sqlQuery = "SELECT * FROM RentalToolList WHERE GONGUNAME LIKE '" + makeListForMysql.join("' OR GONGUNAME LIKE '") + "' AND MAINGONGUCODE = ? AND SUBGONGUCODE = ? AND (DETAILADDR LIKE '%영등포구%' OR  (GONGUSEQ BETWEEN 332 AND 367 OR GONGUSEQ = 13176 OR GONGUSEQ = 13224 OR GONGUSEQ = 13263)) ORDER BY `GONGUSEQ`;"
                 break;
               case '용산구' :
-                sqlQuery = "SELECT * FROM RentalToolList WHERE GONGUNAME LIKE '" + makeListForMysql.join("' OR GONGUNAME LIKE '") + "' AND AND MAINGONGUCODE = ? AND SUBGONGUCODE = ? AND (DETAILADDR LIKE '%용산구%' OR  GONGUSEQ BETWEEN 368 AND 452 OR GONGUSEQ = 13250) ORDER BY `GONGUSEQ`;"
+                sqlQuery = "SELECT * FROM RentalToolList WHERE GONGUNAME LIKE '" + makeListForMysql.join("' OR GONGUNAME LIKE '") + "' AND MAINGONGUCODE = ? AND SUBGONGUCODE = ? AND (DETAILADDR LIKE '%용산구%' OR  GONGUSEQ BETWEEN 368 AND 452 OR GONGUSEQ = 13250) ORDER BY `GONGUSEQ`;"
                 break;
               case '은평구' :
-                sqlQuery = "SELECT * FROM RentalToolList WHERE GONGUNAME LIKE '" + makeListForMysql.join("' OR GONGUNAME LIKE '") + "' AND AND MAINGONGUCODE = ? AND SUBGONGUCODE = ? AND (DETAILADDR LIKE '%은평구%' OR  (GONGUSEQ BETWEEN 453 AND 469 OR GONGUSEQ = 13042 OR GONGUSEQ = 13171 OR GONGUSEQ = 13266)) ORDER BY `GONGUSEQ`;"
+                sqlQuery = "SELECT * FROM RentalToolList WHERE GONGUNAME LIKE '" + makeListForMysql.join("' OR GONGUNAME LIKE '") + "' AND MAINGONGUCODE = ? AND SUBGONGUCODE = ? AND (DETAILADDR LIKE '%은평구%' OR  (GONGUSEQ BETWEEN 453 AND 469 OR GONGUSEQ = 13042 OR GONGUSEQ = 13171 OR GONGUSEQ = 13266)) ORDER BY `GONGUSEQ`;"
                 break;
               case '종로구' :
                 sqlQuery = "SELECT * FROM RentalToolList WHERE GONGUNAME LIKE '" + makeListForMysql.join("' OR GONGUNAME LIKE '") + "' AND MAINGONGUCODE = ? AND SUBGONGUCODE = ? AND (DETAILADDR LIKE '%종로구%' OR  GONGUSEQ BETWEEN 470 AND 487) ORDER BY `GONGUSEQ`;"
                 break;
               case '중구' :
-                sqlQuery = "SELECT * FROM RentalToolList WHERE GONGUNAME LIKE '" + makeListForMysql.join("' OR GONGUNAME LIKE '") + "' AND AND MAINGONGUCODE = ? AND SUBGONGUCODE = ? AND (DETAILADDR LIKE '%중구%' OR  GONGUSEQ BETWEEN 488 AND 507) ORDER BY `GONGUSEQ`;"
+                sqlQuery = "SELECT * FROM RentalToolList WHERE GONGUNAME LIKE '" + makeListForMysql.join("' OR GONGUNAME LIKE '") + "' AND MAINGONGUCODE = ? AND SUBGONGUCODE = ? AND (DETAILADDR LIKE '%중구%' OR  GONGUSEQ BETWEEN 488 AND 507) ORDER BY `GONGUSEQ`;"
                 break;
               case '중랑구' :
                 sqlQuery = "SELECT * FROM RentalToolList WHERE GONGUNAME LIKE '" + makeListForMysql.join("' OR GONGUNAME LIKE '") + "' AND MAINGONGUCODE = ? AND SUBGONGUCODE = ? AND (DETAILADDR LIKE '%중랑구%' OR  (GONGUSEQ BETWEEN 508 AND 510 OR GONGUSEQ BETWEEN 2437 AND 2438 OR GONGUSEQ BETWEEN 13043 AND 13045 OR GONGUSEQ BETWEEN 13200 AND 13202 OR GONGUSEQ BETWEEN 13205 AND 13029 OR GONGUSEQ = 13223)) ORDER BY `GONGUSEQ`;"

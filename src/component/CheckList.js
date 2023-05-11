@@ -13,9 +13,9 @@ function CheckList() {
 
   let [viewData, setViewData] = useState([]);
 
-  let Store = useSelector((state)=>{ return state } )
+  //let Store = useSelector((state)=>{ return state } )
+  const userCart = useSelector((state) => state.userCartStore.userCart);
   let dispatch = useDispatch()
-  console.log(Store)
 
   const regionList = [
     { value: "모든지역", label: "모든지역" },
@@ -143,7 +143,6 @@ function CheckList() {
         const parsedData = response.data;
         setViewData(parsedData);
         dispatch(UPDATE_VIEWDATA(parsedData))
-
         setIsDataloding(false);
         setcheckbutton(false);
       })
@@ -155,9 +154,15 @@ function CheckList() {
     //}
   }, [selectRegion,selectMainCategory, selectMiddleCategory, searchArray]);
 
+  useEffect(() => {
+    console.log("변경됨이 감지됨 허허허허", userCart);
+  }, [userCart]);
+
   let [currentPage, setCurrentPage] = useState(1);
   let [productsPerPage] = useState(20);
 
+  let [showMinButton, setshowMinButton] = useState(0);
+  let [showMaxButton, setshowMaxButton] = useState(10);
   let indexOfLastProduct = currentPage * productsPerPage;
   let indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   let currentProducts = viewData.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -171,17 +176,17 @@ function CheckList() {
     pageNumbers.push(i);
   }
 
-  let renderPageNumbers = pageNumbers.map(function (number) {
+  let renderPageNumbers = pageNumbers.slice(showMinButton, showMaxButton).map((number, index)=> {
     return (
-      <li key={number}>
-        <button onClick={() => setCurrentPage(number)}>{number}</button>
-      </li>
+        <button key={index} onClick={() => {
+          setCurrentPage(number)
+        }}>{number}</button>
     );
-  });
+});
 
   return (
 
-    <div className="CheckListView">
+    <div className={styles.CheckListView}>
       <div className={styles.SelectDiv}>
         <Select
           className={styles.RegionSelect}
@@ -301,7 +306,34 @@ function CheckList() {
         IsDataloding == true ? null :
         <div className={styles.container}>
           <div className={styles.row}>{renderProducts}</div>
-          <ul id="page-numbers">{renderPageNumbers}</ul>
+          <div>
+            {showMinButton > 0 && (
+              <button onClick={() => {
+                setshowMinButton(0);
+                setshowMaxButton(10);
+              }}>&lt;&lt;</button>
+            )}
+            {showMinButton > 0 && (
+              <button onClick={() => {
+                setshowMinButton(showMinButton - 10);
+                setshowMaxButton(showMaxButton - 10);
+              }}>&lt;</button>
+            )}
+            {renderPageNumbers}
+            {showMaxButton < pageNumbers.length && (
+              <button onClick={() => {
+                setshowMinButton(showMinButton + 10);
+                setshowMaxButton(showMaxButton + 10);
+              }}>&gt;</button>
+            )}
+             {showMaxButton < pageNumbers.length && (
+              <button onClick={() => {
+                setshowMinButton(pageNumbers.length - 10);
+                setshowMaxButton(pageNumbers.length);
+              }}>&gt;&gt;</button>
+            )}
+            &nbsp;&nbsp;총 {pageNumbers.length}페이지
+          </div>
         </div>
       }
 
@@ -309,7 +341,6 @@ function CheckList() {
     </div>//ListView
   );
 }
-
 
 function Card(props) {
   const 평일오픈시간 = props.item["OPENWEEKHOUR"];
@@ -341,9 +372,9 @@ function Card(props) {
               카테고리 : {props.item["MAINGONGUNAME"]} &gt;{" "}
               {props.item["SUBGONGUNAME"]}
             </span>{" "}
-            <span>대여장소 :{props.item["PLACENAME"]}</span>
+            <span>대여장소 : {props.item["PLACENAME"]}</span>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <span>
+            <p>
               운영시간 :{" "}
               {props.item["OPENWEEKHOUR"]
                 ? `평일 ${오픈시}시 ${오픈분}분 ~`
@@ -351,7 +382,7 @@ function Card(props) {
               {props.item["CLOSEWEEKHOUR"]
                 ? ` ${클로즈시}시 ${클로즈분}분`
                 : " "}
-            </span>
+            </p>
             <p className={styles.title_sub}>
               <span>전화번호 : {props.item["TELEPHONE"]}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;
