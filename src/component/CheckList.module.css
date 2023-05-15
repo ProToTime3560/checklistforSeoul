@@ -95,6 +95,42 @@ button.blue {
     background-color: white;
   }
   .CheckListView {
-    margin-left: 10%;
-    margin-right:10%;
+
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .userCarttable{
+    border-collapse: collapse;
+    text-align: center;
+  }
+  .userCarttableth{
+      padding: 20px;
+      border-bottom: 1px solid black;
+  }
+
+  .userCarttablehr_line {
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 10px 0;
+  }
+  
+  .tableContainer {
+    display: inline-block;
+  }
+
+  .purchase_button {
+    background-color: #87CEFA;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: 1px solid white;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .purchase_button:active {
+    background-color: #87CEFA;
+    transform: translateY(2px);
   }

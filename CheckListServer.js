@@ -10,8 +10,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // URL 인코딩된 요청 �
 // MySQL 연결
 const db = mysql.createPool({
   host: "toolrentaloffice.coqcexjiecvx.us-east-1.rds.amazonaws.com", // 호스트
-  user: "stakeholders",      // 데이터베이스 계정
-  password: "stakeholders",      // 데이터베이스 비밀번호 가려놓음
+  user: "******",      // 데이터베이스 계정
+  password: "******",      // 데이터베이스 비밀번호 가려놓음
   database: "ToolRentalOffice",  // 사용할 데이터베이스
 });
 

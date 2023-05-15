@@ -3,19 +3,22 @@ import Select from "react-select";
 import axios from "axios";
 import styles from "../component/CheckList.module.css"
 import { useDispatch, useSelector} from "react-redux"
-import { UPDATE_VIEWDATA, ADD_userCart, DELETE_userCart, GET_userCart } from "../component/reduxStoreForViewData.js"
-
+import { UPDATE_VIEWDATA, SET_userCart, ADD_userCart, DELETE_userCart, DELETETUPLE_userCart } from "../component/reduxStoreForViewData.js"
+import {UserCart} from '../component/UserCart';
 //출력할개수  지역
 //선택상자   선택상자
 
 
 function CheckList() {
 
+  let [viewDebug, setviewDebug] = useState(false); //콘솔로그확인on off
   let [viewData, setViewData] = useState([]);
 
-  //let Store = useSelector((state)=>{ return state } )
   const userCart = useSelector((state) => state.userCartStore.userCart);
   let dispatch = useDispatch()
+  const [userCartIsLoaded, setuserCartIsLoaded] = useState(false);
+
+  let [seeuserCart, setseeuserCart] = useState(false);
 
   const regionList = [
     { value: "모든지역", label: "모든지역" },
@@ -126,11 +129,11 @@ function CheckList() {
   let [IsDataloding, setIsDataloding] = useState(false)
   let [userInput, setuserInput] = useState("");
   let [searchArray, setsearchArray] = useState([]);
-  let [checkbutton, setcheckbutton] = useState(false)//useEffect userinput바뀔때마다 무한루프 방지용
 
   useEffect(() => {
-    //if(checkbutton == true){ //버튼이 눌렸을때만
+    if(viewDebug == true) {
     console.log("변경발견")
+    }
     setIsDataloding(true)
     axios
       .post("http://localhost:3001/api/getspecificdata", {
@@ -143,20 +146,38 @@ function CheckList() {
         const parsedData = response.data;
         setViewData(parsedData);
         dispatch(UPDATE_VIEWDATA(parsedData))
+        if(viewDebug) {
+        console.log(viewData);
+        }
         setIsDataloding(false);
-        setcheckbutton(false);
       })
       .catch((error) => {
         console.error(error);
         setIsDataloding(false);
-        setcheckbutton(false);
       });
-    //}
+
   }, [selectRegion,selectMainCategory, selectMiddleCategory, searchArray]);
 
   useEffect(() => {
-    console.log("변경됨이 감지됨 허허허허", userCart);
-  }, [userCart]);
+    const userCartFromLocalStorage = localStorage.getItem('userCart');
+    let storedUserCart;
+  
+    if (userCartFromLocalStorage && userCartFromLocalStorage !== "undefined") {
+      storedUserCart = JSON.parse(userCartFromLocalStorage);
+    } else {
+      storedUserCart = [];
+    }
+  
+    dispatch(SET_userCart(storedUserCart));
+    setuserCartIsLoaded(true);
+  }, [dispatch]);
+
+
+  useEffect(() => {
+    if (userCartIsLoaded) {
+      localStorage.setItem('userCart', JSON.stringify(userCart));
+    }
+  }, [userCart, userCartIsLoaded]);
 
   let [currentPage, setCurrentPage] = useState(1);
   let [productsPerPage] = useState(20);
@@ -185,7 +206,13 @@ function CheckList() {
 });
 
   return (
-
+    seeuserCart == true ? 
+    <div>
+      <button className={styles.purchase_button} onClick={() => {
+      setseeuserCart(false)
+    }}>공구목록이동</button>
+      <UserCart/>
+    </div>:
     <div className={styles.CheckListView}>
       <div className={styles.SelectDiv}>
         <Select
@@ -280,31 +307,39 @@ function CheckList() {
               let filteredInput = userInput.trim().replace(/\s+/g, ' ');
               let tempsearchArray = filteredInput.split(',').map((searchTerm) => searchTerm.trim());
               setsearchArray(tempsearchArray);
+              if(viewDebug) {
               console.log(searchArray);
-              setcheckbutton(true)
+              }
             }
           }}
         />
-        <button className={styles.SerachButton} onClick={() => { //인젝션 공격방지 적용
+        <button className={styles.purchase_button} onClick={() => { //인젝션 공격방지 적용
           let filteredInput = userInput.trim().replace(/\s+/g, ' ');
           let tempsearchArray = filteredInput.split(',').map((searchTerm) => searchTerm.trim());
           setsearchArray(tempsearchArray);
+          if(viewDebug) {
           console.log(searchArray);
-          setcheckbutton(true)
+          }
         }}>
           검색
         </button>
-        <p> 디버그용 확인창----------
+        {
+          viewDebug == true ? <p> 디버그용 확인창----------
           선택지역 : {selectRegion + " , "} 대분류 코드 : {selectMainCategory + " , "} 중분류 코드: {selectMiddleCategory + " , "}
           사용자 입력 : {userInput + " , "} 검색에 적용된 배열키 : {searchArray}
-        </p>
+        </p> : null
+        }
         {
         IsDataloding == true ? <div><img src={process.env.PUBLIC_URL + '/loding-unbackground.gif'} alt="로딩창" /><p>서버로부터 데이터를 로딩중입니다.</p></div> : viewData.length == 0 ? <p>해당하는 항목이 없습니다.</p> :  <p></p>
 
         }
       {
-        IsDataloding == true ? null :
+        IsDataloding == true ? null : seeuserCart == true ? 
+          null :
         <div className={styles.container}>
+          <button className={styles.purchase_button} onClick={() => {
+          setseeuserCart(true)
+        }}>장바구니이동</button>
           <div className={styles.row}>{renderProducts}</div>
           <div>
             {showMinButton > 0 && (
@@ -398,14 +433,14 @@ function Card(props) {
               예약 가능 수량 : {props.item["GONGUCOUNT"]}
             </span>
           </div>
-          <button onClick={()=> {
+          <button className={styles.purchase_button} onClick={()=> {
             dispatch(ADD_userCart(props.item))
 
           }}>
             장바구니추가
           </button>
-          <button onClick={()=> {
-            dispatch(DELETE_userCart(props.item))
+          <button className={styles.purchase_button} onClick={()=> {
+            dispatch(DELETETUPLE_userCart(props.item))
           }}>
             장바구니삭제
           </button>
