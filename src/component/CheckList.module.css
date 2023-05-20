@@ -58,11 +58,19 @@ button.blue {
 
 .product_card {
     border-radius: 10px; /* 각 카드의 모서리를 둥글게 처리 */
+    background-color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
     border: 1px solid #eaeaea; /* 경계선 */
     padding: 20px; /* 내용과 경계선 사이 간격 */
     margin-bottom: 20px; /* 각 카드 사이 간격 */
     list-style: none;
+  }
+
+  .product_card_selected {
+
+    background-color: rgb(220, 220, 220);
+    border: 1px solid black;
+
   }
   
   /* 각 카드의 제목과 설명 텍스트 스타일 */
@@ -88,17 +96,20 @@ button.blue {
   }
 
   .spantitle {
-    background-color: white;
+
   }
 
   .title_sub{
-    background-color: white;
+
+  }
+
+  .backgroundsetwhitesmoke {
+    background-color: whitesmoke;
   }
   .CheckListView {
+    background-color: whitesmoke;
 
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    padding: 0 10%;
   }
 
   .userCarttable{
@@ -131,6 +142,31 @@ button.blue {
   }
   
   .purchase_button:active {
+    background-color: #87CEFA;
+    transform: translateY(2px);
+  }
+
+
+  .pagebutton {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    background-color: #87CEFA;
+    color: #ffffff;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    border: 1px solid gray;
+  }
+  
+  .pagebutton:hover {
+    background-color: #87CEFA;
+  }
+  
+  .pagebutton:active {
     background-color: #87CEFA;
     transform: translateY(2px);
   }

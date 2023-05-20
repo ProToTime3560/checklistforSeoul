@@ -199,20 +199,22 @@ function CheckList() {
 
   let renderPageNumbers = pageNumbers.slice(showMinButton, showMaxButton).map((number, index)=> {
     return (
-        <button key={index} onClick={() => {
+        <button className={styles.pagebutton} key={index} onClick={() => {
           setCurrentPage(number)
         }}>{number}</button>
     );
 });
 
   return (
+    <div className={styles.backgroundsetwhitesmoke}>
+      {
     seeuserCart == true ? 
-    <div>
+    <div className={styles.backgroundsetwhitesmoke}>
       <button className={styles.purchase_button} onClick={() => {
       setseeuserCart(false)
     }}>공구목록이동</button>
       <UserCart/>
-    </div>:
+    </div> :
     <div className={styles.CheckListView}>
       <div className={styles.SelectDiv}>
         <Select
@@ -336,33 +338,33 @@ function CheckList() {
       {
         IsDataloding == true ? null : seeuserCart == true ? 
           null :
-        <div className={styles.container}>
+        <div className={styles.backgroundsetwhitesmoke}>
           <button className={styles.purchase_button} onClick={() => {
           setseeuserCart(true)
         }}>장바구니이동</button>
-          <div className={styles.row}>{renderProducts}</div>
+          <div className={styles.CheckListView}>{renderProducts}</div>
           <div>
             {showMinButton > 0 && (
-              <button onClick={() => {
+              <button className={styles.pagebutton} onClick={() => {
                 setshowMinButton(0);
                 setshowMaxButton(10);
               }}>&lt;&lt;</button>
             )}
             {showMinButton > 0 && (
-              <button onClick={() => {
+              <button className={styles.pagebutton} onClick={() => {
                 setshowMinButton(showMinButton - 10);
                 setshowMaxButton(showMaxButton - 10);
               }}>&lt;</button>
             )}
             {renderPageNumbers}
             {showMaxButton < pageNumbers.length && (
-              <button onClick={() => {
+              <button className={styles.pagebutton} onClick={() => {
                 setshowMinButton(showMinButton + 10);
                 setshowMaxButton(showMaxButton + 10);
               }}>&gt;</button>
             )}
              {showMaxButton < pageNumbers.length && (
-              <button onClick={() => {
+              <button className={styles.pagebutton} onClick={() => {
                 setshowMinButton(pageNumbers.length - 10);
                 setshowMaxButton(pageNumbers.length);
               }}>&gt;&gt;</button>
@@ -374,6 +376,9 @@ function CheckList() {
 
       </div> 
     </div>//ListView
+    }
+  </div>
+    
   );
 }
 
@@ -382,6 +387,11 @@ function Card(props) {
   let 오픈시 = 0;
   let 오픈분 = 0;
   let dispatch = useDispatch()
+  const userCart = useSelector((state) => state.userCartStore.userCart); // 장바구니 상태 가져오기
+  const isItemInCart = props.item && userCart.some(item => item.GONGUSEQ === props.item["GONGUSEQ"]);// 장바구니에 해당 항목이 있는지 확인
+  useEffect(() => {
+    console.log(props.item.id, { isItemInCart });
+  }, []);
   if (props.item["OPENWEEKHOUR"]) {
     const 평일오픈시간 = props.item["OPENWEEKHOUR"];
     오픈시 = String(Math.floor(평일오픈시간 / 100)).padStart(2, "0");
@@ -396,7 +406,7 @@ function Card(props) {
     클로즈분 = String(평일클로즈시간 % 100).padStart(2, "0");
   }
   return (
-    <div className={styles.product_card}>
+    <div className={`${styles.product_card} ${isItemInCart ? styles.product_card_selected : ''}`}>
       <li>
           <strong className={styles.product_title}>
             공구 이름 : {props.item["GONGUNAME"]}

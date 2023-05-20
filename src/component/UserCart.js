@@ -6,7 +6,7 @@ import styles from "../component/CheckList.module.css"
 
 function UserCart() {
     // ...
-    let [viewDebug, setviewDebug] = useState(true); //콘솔로그확인on off
+    let [viewDebug, setviewDebug] = useState(false); //콘솔로그확인on off
 
     const userCart = useSelector((state) => state.userCartStore.userCart);
     let dispatch = useDispatch()
@@ -90,11 +90,12 @@ function UserCart() {
             </thead>
             <tbody>
             {
-              cartData.map((i)=> {
+              cartData.map((i, index)=> {
+                const orderNumber = index + 1;
                 return (
                   <React.Fragment key={i.GONGUSEQ}>
                     <tr>
-                      <td>1</td>
+                      <td>{orderNumber}</td>
                       <td>{i.GONGUNAME}</td>
                       <td>{i.cartcount}</td>
                       <td>
@@ -121,20 +122,24 @@ function UserCart() {
             </tbody>
           </table>
           </div>
-          <p>이름:
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;이름&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:
           <input
           className={styles.UserInput}
           placeholder="홍길동"
           onChange={(e) => {
             setuser_nameInput(e.target.value);
           }}/>
-          전화번호:
+          <p>
+          </p>
+          &nbsp;&nbsp;&nbsp;전화번호&nbsp;&nbsp;&nbsp;&nbsp;:
           <input
           className={styles.UserInput}
           placeholder="010-1234-5678"
           onChange={(e) => {
             setuser_callInput(e.target.value);
           }}/>
+          <p>
+          </p>
           주민등록번호:
           <input
           className={styles.UserInput}
