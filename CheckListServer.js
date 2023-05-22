@@ -28,10 +28,6 @@ app.use(cors({
   optionsSuccessStatus: 200,  // 응답 상태 200으로 설정
 }))
 
-app.get("/pet", (req, res) => {
-  res.send("Hello, World!");
-});
-
 app.get('/', (request, response) => {  
   response.send('Hello from Express!')
 })
@@ -54,15 +50,20 @@ app.get("/api/getdefaultdata", (req, res) => {
   });
 });
 
-app.get("/api/company", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  
-  const sqlQuery = "SELECT * FROM RentalToolList;";
+app.get("/api/getdefaultCompanydata", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*"); /*외부 도메인으로 부터 HTTP 요청 허용*/
+  //console.log('디폴트접속성공');
+  const sqlQuery = "SELECT * FROM ConstructionCompany ORDER BY ENT_AREA";
 
   db.query(sqlQuery, (err, result) => {
+    console.log('접속중');
       res.send(result);
+      console.log('접속완료');
+      console.log(result);
+      console.log(err)
   });
 });
+
 
 app.post("/api/getspecificdata", (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -753,6 +754,78 @@ app.post("/api/getspecificdata", (req, res) => {
     
   
     }
+  }
+  
+});
+
+app.post("/api/getdefaultCompanydata", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  
+  let selectRegion = req.body.Region;
+  let searchArray = req.body.searchArray;
+
+  console.log(selectRegion, searchArray , "디버그용 확인 출력이라네")//디버그용
+
+  if(searchArray.length == 0) {
+    console.log("검색어가 없다네")
+      console.log("region 설정없음")
+       
+        if(selectRegion == "모든지역") {//모든지역 선택
+          let sqlQuery = "SELECT * FROM ConstructionCompany ORDER BY ENT_AREA";
+  
+          console.log("Executing SQL query:", sqlQuery);
+          db.query(sqlQuery, (err, result) => {
+            if (err) {
+              console.error(err);
+              res.status(500).send("Error retrieving specific data");
+            } else {
+              res.send(result);
+            }
+          });
+        }
+        else {
+          let sqlQuery = "SELECT * FROM ConstructionCompany WHERE `ENT_AREA` = ? ORDER BY `ENT_AREA`";
+  
+          console.log("Executing SQL query:", sqlQuery, searchArray);
+          db.query(sqlQuery, selectRegion, (err, result) => {
+            if (err) {
+              console.error(err);
+              res.status(500).send("Error retrieving specific data");
+            } else {
+              res.send(result);
+            }
+          });
+        }
+    
+  
+    
+  }
+  else{
+    console.log("검색어가 있네")
+    let makeListForMysql = searchArray.map((value) => `%${value}%`);
+    if(selectRegion == "모든지역") { //모든지역 선택
+          let sqlQuery = "SELECT * FROM ConstructionCompany WHERE MAIN_CNSTRCT_FLD_NM LIKE '" + makeListForMysql.join("' OR MAIN_CNSTRCT_FLD_NM Like '") + "' ORDER BY ENT_AREA";
+          console.log("Executing SQL query:", sqlQuery, searchArray );
+          db.query(sqlQuery, searchArray,(err, result) => {
+            if (err) {
+              console.error(err);
+              res.status(500).send("Error retrieving specific data");
+            } else {
+              res.send(result);
+            }
+          });
+        } else { // 모든지역 아님
+          let sqlQuery = "SELECT * FROM ConstructionCompany WHERE MAIN_CNSTRCT_FLD_NM LIKE '" + makeListForMysql.join("' OR MAIN_CNSTRCT_FLD_NM Like '") + "'  AND `ENT_AREA` = ? ORDER BY ENT_AREA";
+          console.log("Executing SQL query:", sqlQuery, selectRegion, searchArray);
+          db.query(sqlQuery, searchArray ,  selectRegion, (err, result) => {
+            if (err) {
+              console.error(err);
+              res.status(500).send("Error retrieving specific data");
+            } else {
+              res.send(result);
+            }
+          });
+        }
   }
   
 });

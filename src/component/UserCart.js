@@ -129,8 +129,8 @@ function UserCart() {
           onChange={(e) => {
             setuser_nameInput(e.target.value);
           }}/>
-          <p>
           </p>
+          <p>
           &nbsp;&nbsp;&nbsp;전화번호&nbsp;&nbsp;&nbsp;&nbsp;:
           <input
           className={styles.UserInput}
@@ -138,8 +138,8 @@ function UserCart() {
           onChange={(e) => {
             setuser_callInput(e.target.value);
           }}/>
-          <p>
           </p>
+          <p>
           주민등록번호:
           <input
           className={styles.UserInput}
